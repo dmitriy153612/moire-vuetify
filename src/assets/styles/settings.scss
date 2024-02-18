@@ -1,0 +1,26 @@
+@use './variables.scss';
+
+@use 'vuetify/settings' with (
+  $progress-circular-rotate-animation: progress-circular-rotate 1.8s linear infinite,
+  $progress-circular-rotate-dash: progress-circular-dash 1.8s ease-in-out infinite
+);
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+fieldset {
+  border: none;
+}
+
+.main-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  background-color: var(--main-bg);
+}
+
+body {
+  background-color: var(--main-bg);
+}
