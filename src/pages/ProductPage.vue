@@ -19,7 +19,6 @@
       v-if="selectedColorId && selectedSizeId && price"
       @basket="addToBasket"
     />
-
     <product-info class="product-section__info" :materials="materials" />
   </app-section>
 </template>
@@ -30,11 +29,11 @@ import AppBreadcrumbs from '@/components/AppBreadcrumbs.vue'
 import ProductGallery from '@/components/ProductGallery.vue'
 import ProductForm from '@/components/ProductForm.vue'
 import ProductInfo from '@/components/ProductInfo.vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQueryValue } from 'vue-router'
 import { useBasketStore } from '@/stores/basketStore'
 import { formatValueToNumber } from '@/helpers/formatValueToNumber'
 import { useProductStore } from '@/stores/productStore'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect, type Ref } from 'vue'
 import { type Breadcrumbs } from '@/models/Common'
 import { type FilterCategory, type FilterCheckbox } from '@/models/Filter'
 import { type ProductColorOption } from '@/models/Catalog'
@@ -102,16 +101,7 @@ const breadcrumbs = computed<Breadcrumbs[]>(() => [
   }
 ])
 
-loadProduct()
-
-watch(
-  [() => selectedColorId.value, () => selectedSizeId.value],
-  ([newColorId, newSizeId]) => {
-    setcolorAndSizeToRoute(newColorId, newSizeId)
-  },
-);
-
-function setcolorAndSizeToRoute(newColorId: number, newSizeId: number) {
+function setColorAndSizeToRoute(newColorId: number, newSizeId: number) {
   router.replace({
     query: {
       ...route.query,
@@ -123,24 +113,29 @@ function setcolorAndSizeToRoute(newColorId: number, newSizeId: number) {
 
 async function loadProduct() {
   if (typeof route.query.id === 'string') {
-  await productStore.fetchProduct(route.query.id)
-  setFirstAvaliableSizeId(sizes.value)
-setFirstAvaliableColorId(colorOptions.value)
-}
+    await productStore.fetchProduct(route.query.id)
+    setFirstAvaliableSizeId(route.query.sizeId)
+    setFirstAvaliableColorId(route.query.colorId)
+  }
 }
 
-function setFirstAvaliableSizeId(sizes: FilterCategory[]) {
-  if (!selectedSizeId.value && sizes.length) {
-    selectedSizeId.value = sizes[0].id
-    console.log(sizes[0])
-  }
-  
-}
-function setFirstAvaliableColorId(colors: ProductColorOption[]) {
-  if (!selectedColorId.value && colors.length) {
-    selectedColorId.value = colors[0].id
+function setFirstAvaliableSizeId(querySizeId: LocationQueryValue | LocationQueryValue[]) {
+  const sizeId = querySizeId ? formatValueToNumber(querySizeId) : null
+  if (sizeId && checkIsSizeIdExist(sizeId)) {
+    selectedSizeId.value = sizeId
+  } else {
+    selectedSizeId.value = sizes.value[0].id
   }
 }
+function setFirstAvaliableColorId(queryColorId: LocationQueryValue | LocationQueryValue[]) {
+  const colorId = queryColorId ? formatValueToNumber(queryColorId) : null
+  if (colorId && checkIsColorIdExist(colorId)) {
+    selectedColorId.value = colorId
+  } else {
+    selectedColorId.value = colorOptions.value[0].id
+  }
+}
+
 function addToBasket() {
   const product = {
     productId: productId.value.toString(),
@@ -150,6 +145,27 @@ function addToBasket() {
   }
   basketStore.fetchAddToBasket(product)
 }
+
+function checkIsColorIdExist(colorId: number): boolean {
+  return colorOptions.value.some((item) => item.id === colorId)
+}
+function checkIsSizeIdExist(sizeId: number): boolean {
+  return sizes.value.some((item) => item.id === sizeId)
+}
+
+loadProduct()
+
+watch([() => selectedColorId.value, () => selectedSizeId.value], ([newColorId, newSizeId]) => {
+  setColorAndSizeToRoute(newColorId, newSizeId)
+})
+
+watch(
+  [() => route.query.colorId, () => route.query.sizeId],
+  ([newQueryColorId, newQuerySizeId,]) => {
+    setFirstAvaliableSizeId(newQuerySizeId)
+    setFirstAvaliableColorId(newQueryColorId)
+  }
+)
 </script>
 
 <style lang="scss" scoped>
