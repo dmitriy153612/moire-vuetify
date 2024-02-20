@@ -1,9 +1,5 @@
 <template>
   <form class="product-form" @submit.prevent="emitForm">
-    <div>
-      <span class="product-form__span">{{ `Артикул: ${productId}` }}</span>
-      <app-title :title="title" />
-    </div>
     <div class="product-form__block">
       <app-counter v-model:amount="updatedAmount" class="product-form__counter" />
       <strong class="product-form__price">{{ countedPrice }}</strong>
@@ -45,7 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import AppTitle from '@/components/AppTitle.vue'
 import AppCounter from '@/components/AppCounter.vue'
 import AppFieldset from '@/components/AppFieldset.vue'
 import AppColorPicker from '@/components/AppColorPicker.vue'
@@ -97,5 +92,15 @@ function emitForm() {
     width: max-content;
   }
 }
+
+@media (max-width: 600px) {
+  .product-form {
+    &__block {
+      justify-content: center;
+    }
+    &__btn {
+      justify-self: center;
+    }
+  }
+}
 </style>
-@/models/filter

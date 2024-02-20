@@ -1,11 +1,15 @@
 <template>
   <app-section class="pt-10 product-section" v-if="product && !productStore.isProductLoading">
-    <!-- <app-breadcrumbs :items="breadcrumbs" /> -->
+    <app-breadcrumbs class="product-section__breadcrumbs" :items="breadcrumbs" />
     <product-gallery
       class="product-section__gallery"
       :color-options="colorOptions"
       v-model:selected-color-id="selectedColorId"
     />
+    <div class="product-section__title-box">
+      <span class="product-form__span">{{ `Артикул: ${productId}` }}</span>
+      <app-title :title="title" />
+    </div>
     <product-form
       class="product-section__form"
       :color-list="colorOptions"
@@ -24,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import AppTitle from '@/components/AppTitle.vue'
 import AppSection from '@/components/AppSection.vue'
 import AppBreadcrumbs from '@/components/AppBreadcrumbs.vue'
 import ProductGallery from '@/components/ProductGallery.vue'
@@ -33,7 +38,7 @@ import { useRoute, useRouter, type LocationQueryValue } from 'vue-router'
 import { useBasketStore } from '@/stores/basketStore'
 import { formatValueToNumber } from '@/helpers/formatValueToNumber'
 import { useProductStore } from '@/stores/productStore'
-import { computed, ref, watch, watchEffect, type Ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { type Breadcrumbs } from '@/models/Common'
 import { type FilterCategory, type FilterCheckbox } from '@/models/Filter'
 import { type ProductColorOption } from '@/models/Catalog'
@@ -161,7 +166,7 @@ watch([() => selectedColorId.value, () => selectedSizeId.value], ([newColorId, n
 
 watch(
   [() => route.query.colorId, () => route.query.sizeId],
-  ([newQueryColorId, newQuerySizeId,]) => {
+  ([newQueryColorId, newQuerySizeId]) => {
     setFirstAvaliableSizeId(newQuerySizeId)
     setFirstAvaliableColorId(newQueryColorId)
   }
@@ -171,48 +176,55 @@ watch(
 <style lang="scss" scoped>
 .product-section {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto auto 1fr;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  grid-template-areas:
+    'breadcrumbs breadcrumbs'
+    'gallery title-box'
+    'gallery form'
+    'gallery info';
+  row-gap: 20px;
+  column-gap: 40px;
+  &__title-box {
+    grid-area: title-box;
+  }
+  &__breadcrumbs {
+    grid-area: breadcrumbs;
+  }
   &__gallery {
-    grid-column: 1;
-    grid-row: 1 / 3;
+    grid-area: gallery;
   }
   &__form {
-    grid-column: 2;
-    grid-row: 1;
+    grid-area: form;
     align-self: flex-start;
   }
   &__info {
-    grid-column: 2;
-    grid-row: 2;
+    grid-area: info;
   }
 }
 
 @media (max-width: 960px) {
   .product-section {
-    &__info {
-      grid-column: 1 / 3;
-      grid-row: 3;
-    }
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      'breadcrumbs breadcrumbs'
+      'gallery title-box'
+      'gallery form'
+      'info info';
+    column-gap: 20px;
   }
 }
 @media (max-width: 600px) {
   .product-section {
     grid-template-columns: 1fr;
-    &__gallery {
-      grid-column: 1;
-      grid-row: 1;
-    }
-    &__form {
-      grid-column: 1;
-      grid-row: 2;
-      align-self: flex-start;
-    }
-    &__info {
-      grid-column: 1;
-      grid-row: 3;
-    }
+    grid-template-rows: repeat(4, auto);
+    grid-template-areas:
+      'breadcrumbs'
+      'title-box'
+      'gallery'
+      'form'
+      'info';
+    column-gap: 20px;
   }
 }
 </style>

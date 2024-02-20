@@ -5,7 +5,8 @@
     </div>
 
     <v-slide-group
-      style="max-width: 100%; width: auto; height: 80px; justify-self: center"
+      class="gallery__slide-group"
+      style="max-width: 100%; height: 80px; justify-self: center"
       v-model="updatedSelectedColorId"
       selected-class="bg-primary"
       show-arrows
@@ -57,8 +58,8 @@ const imgUrl = computed<string>(() => {
 
 <style lang="scss" scoped>
 .gallery {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr;
   align-items: center;
   row-gap: 20px;
   &__img-wrapper {
@@ -73,6 +74,9 @@ const imgUrl = computed<string>(() => {
     max-width: 100%;
     object-fit: cover;
     box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+  }
+  &__slide-group {
+    align-self: flex-start;
   }
 }
 
