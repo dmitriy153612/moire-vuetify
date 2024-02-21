@@ -1,13 +1,13 @@
 <template>
   <div class="counter">
     <v-btn
-      icon="mdi-plus"
+      icon="mdi-minus"
       size="small"
       aria-label="уменьшить количество товара"
       color="pink"
       class="counter__btn"
       @click="decrement"
-    ></v-btn>
+    />
     <v-text-field
       class="counter__input"
       aria-label="количество товара"
@@ -19,7 +19,7 @@
       hide-details
       style="width: 54px"
       single-line
-      v-model="amount"
+      v-model="updatedModelValue"
     />
     <v-btn
       icon="mdi-plus"
@@ -28,7 +28,7 @@
       color="pink"
       class="counter__btn"
       @click="incrememt"
-    ></v-btn>
+    />
   </div>
 </template>
 
@@ -37,30 +37,30 @@ import { watch } from 'vue'
 import { ref } from 'vue'
 
 const props = defineProps({
-  amount: { type: Number, default: 1 }
+  modelValue: { type: Number, default: 1 }
 })
 
-const emit = defineEmits(['update:amount'])
+const emit = defineEmits(['update:modelValue'])
 
-const amount = ref<number>(props.amount)
+const updatedModelValue = ref<number>(props.modelValue)
 
 function incrememt() {
-  amount.value++
+  updatedModelValue.value++
 }
 function decrement() {
-  if (amount.value <= 1) {
+  if (updatedModelValue.value <= 1) {
     return
   }
-  amount.value--
+  updatedModelValue.value--
 }
 
 watch(
-  () => amount.value,
+  () => updatedModelValue.value,
   (newValue) => {
     if (newValue < 1) {
-      amount.value = 1
+      updatedModelValue.value = 1
     }
-    emit('update:amount', amount.value)
+    emit('update:modelValue', updatedModelValue.value)
   }
 )
 </script>

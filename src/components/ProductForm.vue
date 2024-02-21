@@ -1,7 +1,7 @@
 <template>
   <form class="product-form" @submit.prevent="emitForm">
     <div class="product-form__block">
-      <app-counter v-model:amount="updatedAmount" class="product-form__counter" />
+      <app-counter v-model="updatedAmount" class="product-form__counter" />
       <strong class="product-form__price">{{ countedPrice }}</strong>
     </div>
     <div class="product-form__block">
@@ -34,6 +34,7 @@
       color="pink"
       size="x-large"
       type="submit"
+      :loading="isLoadingAddToBascket"
     >
       В корзину
     </v-btn>
@@ -56,7 +57,8 @@ const props = defineProps({
   selectedColorId: { type: Number, required: true },
   selectedSizeId: { type: Number, required: true },
   amount: { type: Number, required: true },
-  title: { type: String, required: true }
+  title: { type: String, required: true },
+  isLoadingAddToBascket: { type: Boolean, defoult: false }
 })
 
 const emit = defineEmits(['basket'])

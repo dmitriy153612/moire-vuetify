@@ -1,5 +1,5 @@
 <template>
-  <app-section class="pt-10 product-section" v-if="product && !productStore.isProductLoading">
+  <app-section class="product-section" v-if="product && !productStore.isProductLoading">
     <app-breadcrumbs class="product-section__breadcrumbs" :items="breadcrumbs" />
     <product-gallery
       class="product-section__gallery"
@@ -17,6 +17,7 @@
       :price="price"
       :product-id="productId"
       :title="title"
+      :is-loading-add-to-bascket="basketStore.isAddtoBasketLoading"
       v-model:selected-color-id="selectedColorId"
       v-model:selected-size-id="selectedSizeId"
       v-model:amount="amount"
@@ -24,6 +25,7 @@
       @basket="addToBasket"
     />
     <product-info class="product-section__info" :materials="materials" />
+    {{ product.colors }}
   </app-section>
 </template>
 
@@ -38,10 +40,10 @@ import { useRoute, useRouter, type LocationQueryValue } from 'vue-router'
 import { useBasketStore } from '@/stores/basketStore'
 import { formatValueToNumber } from '@/helpers/formatValueToNumber'
 import { useProductStore } from '@/stores/productStore'
+import { getColorOptions } from '@/helpers/getColorOptions'
 import { computed, ref, watch } from 'vue'
 import { type Breadcrumbs } from '@/models/Common'
 import { type FilterCategory, type FilterCheckbox } from '@/models/Filter'
-import { type ProductColorOption } from '@/models/Catalog'
 import { type Product } from '@/models/Product'
 
 const productStore = useProductStore()
@@ -57,27 +59,7 @@ const product = computed<Product | null>(() => productStore.product)
 const sizes = computed<FilterCategory[]>(() => (product.value ? product.value.sizes : []))
 const materials = computed<FilterCheckbox[]>(() => (product.value ? product.value.materials : []))
 const price = computed<number>(() => (product.value ? product.value.price : 0))
-const colorOptions = computed<ProductColorOption[]>(() => {
-  const colorsList: ProductColorOption[] = []
-  if (!product.value) {
-    return []
-  }
-  product.value.colors.forEach((item) => {
-    const colorObj: ProductColorOption = {
-      id: item.color.id,
-      code: item.color.code,
-      title: item.color.title,
-      imgUrl: ''
-    }
-    if (item.gallery && item.gallery[0].file.url) {
-      colorObj.imgUrl = item.gallery[0].file.url
-    } else {
-      colorObj.imgUrl = '/src/assets/unnamed.webp'
-    }
-    colorsList.push(colorObj)
-  })
-  return colorsList
-})
+const colorOptions = computed(() => getColorOptions(product.value ? product.value.colors : []))
 const categoryTitle = computed<string>(() => product.value?.category.title || '')
 const categoryId = computed<string>(() => (product.value?.category.id || 0).toString())
 const title = computed<string>(() => product.value?.title || '')

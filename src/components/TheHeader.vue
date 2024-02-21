@@ -14,7 +14,7 @@
       <v-spacer class="hidden-md-and-up" />
 
       <router-link class="d-flex flex-grow-100" :to="{ name: 'catalog' }">
-        <img src="@/assets/logo.svg" alt="Логотип" />
+        <img src="@/assets/images/logo.svg" alt="Логотип" />
       </router-link>
 
       <v-spacer />

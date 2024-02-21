@@ -1,15 +1,8 @@
-<template>
-  <div>
-
-  </div>
-</template>
-
-<script setup lang="ts">
 import { type CatalogColor, type ProductColorOption } from '@/models/Catalog';
 
-function getColorOptions(galleryList: CatalogColor[]): ProductColorOption[] {
+export function getColorOptions(galleryList: CatalogColor[]): ProductColorOption[] {
   const colorsList: ProductColorOption[] = []
-  if (!galleryList) {
+  if (!galleryList.length) {
     return []
   }
   galleryList.forEach((item) => {
@@ -28,8 +21,3 @@ function getColorOptions(galleryList: CatalogColor[]): ProductColorOption[] {
   })
   return colorsList
 }
-</script>
-
-<style scoped>
-
-</style>

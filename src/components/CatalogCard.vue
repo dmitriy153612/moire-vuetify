@@ -32,6 +32,7 @@
 import AppColorPicker from '@/components/AppColorPicker.vue'
 import AppPreloader from '@/components/AppPreloader.vue'
 import { formatPrice } from '@/helpers/formatPrice'
+import { getColorOptions } from '@/helpers/getColorOptions'
 import { type CatalogProduct, type ProductColorOption } from '@/models/Catalog'
 import { computed, ref, watch } from 'vue'
 
@@ -49,24 +50,7 @@ const query = computed(() => {
   return { id: productId.value, colorId: selectedColorId.value }
 })
 
-const colorOptions = computed<ProductColorOption[]>(() => {
-  const colorsList: ProductColorOption[] = []
-  props.catalogProduct.colors.forEach((item) => {
-    const colorObj: ProductColorOption = {
-      id: item.color.id,
-      code: item.color.code,
-      title: item.color.title,
-      imgUrl: ''
-    }
-    if (item.gallery && item.gallery[0].file.url) {
-      colorObj.imgUrl = item.gallery[0].file.url
-    } else {
-      colorObj.imgUrl = '/src/assets/unnamed.webp'
-    }
-    colorsList.push(colorObj)
-  })
-  return colorsList
-})
+const colorOptions = computed(() => getColorOptions(props.catalogProduct.colors))
 
 const imgUrl = computed(() => {
   const optionObj: ProductColorOption | undefined = colorOptions.value.find((item) => {

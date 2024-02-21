@@ -8,5 +8,6 @@ export const PRODUCT_PATH: string = '/api/products/'
 export const COLORS_PATH: string = '/api/colors'
 export const BASKET_PATH: string = '/api/baskets'
 export const ADD_TO_BASKET_PATH: string = '/api/baskets/products'
+export const CHANGE_BASKET_ITEM__PATH: string = '/api/baskets/products'
 
 export const MAX_AVALIABLE_PRICE: number = 6000

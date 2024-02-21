@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { BASE_URL, BASKET_PATH, ADD_TO_BASKET_PATH } from '@/variables'
+import { BASE_URL, BASKET_PATH, ADD_TO_BASKET_PATH, CHANGE_BASKET_ITEM__PATH } from '@/variables'
 import { type BasketProduct, type BasketData, type BasketItem } from '@/models/Basket'
 
 export const useBasketStore = defineStore('basketStore', () => {
@@ -21,6 +21,11 @@ export const useBasketStore = defineStore('basketStore', () => {
     return data ? await JSON.parse(data) : ''
   }
 
+  function setBasketList(data: BasketData) {
+    const basketList: BasketItem[] = data.items
+    basket.value = basketList
+  }
+
   async function fetchGetBasket() {
     try {
       isBasketLoading.value = true
@@ -30,8 +35,7 @@ export const useBasketStore = defineStore('basketStore', () => {
           userAccessKey: token
         }
       })
-      const basketList: BasketItem[] = res.data.items
-      basket.value = basketList
+      setBasketList(res.data)
       setTokenToLS(res.data.user.accessKey)
     } catch (err) {
       console.error(err)
@@ -39,6 +43,7 @@ export const useBasketStore = defineStore('basketStore', () => {
       isBasketLoading.value = false
     }
   }
+
 
   async function fetchAddToBasket(product: BasketProduct) {
     try {
@@ -49,9 +54,24 @@ export const useBasketStore = defineStore('basketStore', () => {
         params: { userAccessKey: token }
       }
       const res = await axios.post<BasketData>(`${BASE_URL}${ADD_TO_BASKET_PATH}`, product, config)
-      const basketList: BasketItem[] = res.data.items
-      basket.value = basketList
+      setBasketList(res.data)
       setTokenToLS(res.data.user.accessKey)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      isAddtoBasketLoading.value = false
+    }
+  }
+
+  async function fetchChangeItemAmount(basketItemId: string, amount: string) {
+    try {
+      const token: string = await getTokenFromLS()
+      const body = { basketItemId, quantity: amount}
+      const config = {
+        params: { userAccessKey: token }
+      }
+      const res = await axios.put<BasketData>(`${BASE_URL}${CHANGE_BASKET_ITEM__PATH}`, body, config)
+      setBasketList(res.data)
     } catch (err) {
       console.error(err)
     } finally {
@@ -63,7 +83,9 @@ export const useBasketStore = defineStore('basketStore', () => {
     basket,
     basketAmount,
     isAddtoBasketLoading,
+    isBasketLoading,
     fetchGetBasket,
-    fetchAddToBasket
+    fetchAddToBasket,
+    fetchChangeItemAmount,
   }
 })
